@@ -37,6 +37,8 @@ int main(int argc, char* argv[]){
 	inet_ntop(res->ai_family,addr,ipstr,sizeof(ipstr));
 	printf("ip : %s \n",ipstr);
 	
-	//socket_sd = socket(rp->ai_family,rp->ai_socktype,);
+	int socket_sd;
+	if((socket_sd = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) < 0){perror("unable to create socket");}
+	printf("socket_sd : %d\n", socket_sd);
 	
 }
