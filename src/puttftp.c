@@ -6,6 +6,8 @@
 #include <string.h>
 #include <arpa/inet.h>
 
+void printip(struct addrinfo* res);
+
 int main(int argc, char* argv[]){
 	
 	if(argc != 3){perror("wrong number of arguments");exit(EXIT_FAILURE);}
@@ -26,19 +28,21 @@ int main(int argc, char* argv[]){
 	
 	struct addrinfo* res;
 	
-	getaddrinfo(host, NULL, &hints, &res);
+	int s=getaddrinfo(host, NULL, &hints, &res);
+	if (s!=0){
+		fprintf(stderr,"getaddrinfo:%s",gai_strerror(s));
+		exit(EXIT_FAILURE);
+	}
+	printip(res);
+
+	int socket_fd;
+	if((socket_fd = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) < 0){perror("unable to create socket");}
+	printf("socket_fd : %d\n", socket_fd);
 	
-	
-	void* addr;
-	char ipstr[INET6_ADDRSTRLEN];
-	struct sockaddr_in* ip = (struct sockaddr_in*) res->ai_addr;
-		
-	addr = &(ip->sin_addr);
-	inet_ntop(res->ai_family,addr,ipstr,sizeof(ipstr));
-	printf("ip : %s \n",ipstr);
-	
-	int socket_sd;
-	if((socket_sd = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) < 0){perror("unable to create socket");}
-	printf("socket_sd : %d\n", socket_sd);
-	
+}
+
+void printip(struct addrinfo* res){
+	char host[NI_MAXHOST];
+	getnameinfo(res->ai_addr,res->ai_addrlen,host,sizeof(host),NULL,0,NI_NUMERICHOST | NI_NUMERICSERV);
+	printf("ip : %s \n",host);
 }
