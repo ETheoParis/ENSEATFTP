@@ -42,7 +42,7 @@ int main(int argc, char* argv[]){
 }
 
 void printip(struct addrinfo* res){
-	char host[NI_MAXHOST];
-	getnameinfo(res->ai_addr,res->ai_addrlen,host,sizeof(host),NULL,0,NI_NUMERICHOST | NI_NUMERICSERV);
-	printf("ip : %s \n",host);
+	char host_r[NI_MAXHOST];
+	getnameinfo(res->ai_addr,res->ai_addrlen,host_r,sizeof(host_r),NULL,0,NI_NUMERICHOST | NI_NUMERICSERV);
+	printf("ip : %s \n",host_r);
 }

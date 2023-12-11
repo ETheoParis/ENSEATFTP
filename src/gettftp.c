@@ -8,7 +8,6 @@
 #include <unistd.h>
 
 void printip(struct addrinfo* res);
-
 int main(int argc, char* argv[]){
 	
 	if(argc != 3){perror("wrong number of arguments");exit(EXIT_FAILURE);}
@@ -40,14 +39,14 @@ int main(int argc, char* argv[]){
 	if((socket_fd = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) < 0){perror("unable to create socket");}
 	printf("socket_fd : %d\n", socket_fd);
 	
-	//int lenRRQ = 4;
-	
 	freeaddrinfo(res);
 	close(socket_fd);
 }
 
 void printip(struct addrinfo* res){
-	char host[NI_MAXHOST];
-	getnameinfo(res->ai_addr,res->ai_addrlen,host,sizeof(host),NULL,0,NI_NUMERICHOST | NI_NUMERICSERV);
-	printf("ip : %s \n",host);
+	char host_r[NI_MAXHOST];
+	getnameinfo(res->ai_addr,res->ai_addrlen,host_r,sizeof(host_r),NULL,0,NI_NUMERICHOST | NI_NUMERICSERV);
+	printf("ip : %s \n",host_r);
 }
+
+
