@@ -5,8 +5,11 @@
 #include <netdb.h>
 #include <string.h>
 #include <arpa/inet.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 void printip(struct addrinfo* res);
+char* WRQ(int socket_fd, struct addrinfo* res, char* file,char* mode);
 
 int main(int argc, char* argv[]){
 	
@@ -39,6 +42,28 @@ int main(int argc, char* argv[]){
 	if((socket_fd = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) < 0){perror("unable to create socket");}
 	printf("socket_fd : %d\n", socket_fd);
 	
+}
+
+char* WRQ(int socket_fd, struct addrinfo* res, char* file,char* mode){
+	
+	int size_file = strlen(file);
+	int size_mode = strlen(mode);
+	int size_WRQ = 2 + size_file + 1 + size_mode + 1;	// 2 byts Opcode and a zero to separate filename and mode and to mark the end
+	char* WRQ_msg = calloc(1,size_WRQ);							//RRQ de la forme Opcodefile0mode0
+	
+	WRQ_msg[0] = 0;										// initialise Opcode to read request
+	WRQ_msg[1] = 2; 		
+
+	strcpy(WRQ_msg+2,file);
+	WRQ_msg[2+size_file]=0;
+									//separator
+	strcpy(WRQ_msg+3+size_file,mode);
+	WRQ_msg[3+size_file+size_mode]=0;
+
+	ssize_t size_msg = sendto(socket_fd, WRQ_msg, size_WRQ, 0, res->ai_addr, res->ai_addrlen);
+	if(size_msg == -1){perror("sendto error");exit(EXIT_FAILURE);}
+	
+	return WRQ_msg;
 }
 
 void printip(struct addrinfo* res){
