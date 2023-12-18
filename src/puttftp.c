@@ -8,9 +8,11 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+#define DATA_SIZE 512
+
 void printip(struct addrinfo* res);
 char* WRQ(int socket_fd, struct addrinfo* res, char* file,char* mode);
-//void send(int socket_fd, struct addrinfo* res, char* file);
+void sendData(int socket_fd, struct addrinfo* res, char* file);
 
 int main(int argc, char* argv[]){
 	
@@ -67,6 +69,20 @@ char* WRQ(int socket_fd, struct addrinfo* res, char* file,char* mode){
 	return WRQ_msg;
 }
 
+void sendData(int socket_fd, struct addrinfo* res, char* file){
+	int fileSize = strlen(file);
+	int blockNum=0;
+	while (blockNum*DATA_SIZE<fileSize){
+		char *data=(char*)calloc(1,DATA_SIZE);
+		data[0]=0;
+		data[1]=3;
+		strcpy(data+2,blockNum);
+		strcpy(data+4,file+blockNum*DATA_SIZE);
+		ssize_t size_sent = sendto(socket_fd, data, DATA_SIZE, 0, res->ai_addr, res->ai_addrlen);
+		if(size_sent == -1){perror("sendto error");exit(EXIT_FAILURE);}
+		
+	}
+}
 void printip(struct addrinfo* res){
 	char host_r[NI_MAXHOST];
 	getnameinfo(res->ai_addr,res->ai_addrlen,host_r,sizeof(host_r),NULL,0,NI_NUMERICHOST | NI_NUMERICSERV);
