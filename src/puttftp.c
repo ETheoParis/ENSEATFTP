@@ -10,16 +10,17 @@
 
 void printip(struct addrinfo* res);
 char* WRQ(int socket_fd, struct addrinfo* res, char* file,char* mode);
+//void send(int socket_fd, struct addrinfo* res, char* file);
 
 int main(int argc, char* argv[]){
 	
-	if(argc != 3){perror("wrong number of arguments");exit(EXIT_FAILURE);}
+	if(argc != 4){perror("wrong number of arguments");exit(EXIT_FAILURE);}
 	
 	char* host;
 	char* file;
 
 	host = argv[1];
-	file = argv[2];
+	file = argv[3];
 
 	printf("host : %s	file : %s \n",host,file);
 	
@@ -31,7 +32,7 @@ int main(int argc, char* argv[]){
 	
 	struct addrinfo* res;
 	
-	int s=getaddrinfo(host, NULL, &hints, &res);
+	int s=getaddrinfo(host, argv[2], &hints, &res);
 	if (s!=0){
 		fprintf(stderr,"getaddrinfo:%s",gai_strerror(s));
 		exit(EXIT_FAILURE);
